@@ -1,0 +1,64 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Bench
+
+on: [workflow_dispatch]
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        packages: [ "vim", "mariadb", "postgresql-server" ]
+        host:     [ "http://download.opensuse.org", "http://mirrorcache-us.opensuse.org" ]
+    container:
+      image: opensuse/tumbleweed
+    steps:
+      - name: Configure mirrorcache
+        run: sed -i 's,http://download.opensuse.org,https://mirrorcache-us.opensuse.org,g' /etc/zypp/repos.d/*repo
+      - name: Install dependencies
+        run: zypper -n in m4 git-core make sudo
+      - name: Clone environ
+        run: git clone https://github.com/andrii-suse/environ
+      - name: Install environ
+        run: |
+          cd environ
+          sudo make install
+      - uses: actions/checkout@v2
+      - name: Download package
+        run: |
+          ENVIRON_PM_OPENSUSE_HOST=${{ matrix.host }} environ -l $PWD zy1
+          zy1/refresh
+          zy1/install --download-only ${{ matrix.packages }}
+      - name: Prepare Results
+        run: |
+          host=${{ matrix.host }}
+          host=${host//:/_}
+          host=${host//\//_}
+          mkdir arts
+          du -hs zy1/openSUSE_Tumbleweed/              > arts/${{ matrix.packages  }}.tumbleweed.$host.du
+          cat zy1/openSUSE_Tumbleweed/.seconds_install > arts/${{ matrix.packages  }}.tumbleweed.$host.seconds
+          du -hs zy1/openSUSE_Leap_15.2/               > arts/${{ matrix.packages  }}.leap152.$host.du
+          cat zy1/openSUSE_Leap_15.2/.seconds_install  > arts/${{ matrix.packages  }}.leap152.$host.seconds
+          du -hs zy1/openSUSE_Leap_15.3/               > arts/${{ matrix.packages  }}.leap153.$host.du
+          cat zy1/openSUSE_Leap_15.3/.seconds_install  > arts/${{ matrix.packages  }}.leap153.$host.seconds
+      - uses: actions/upload-artifact@v2
+        with:
+          name: logs
+          path: arts/
+      - name: Results
+        run: |
+          du -hs zy1/*/
+          tail zy1/*/.seconds_install
+  summary:
+    needs: bench
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download results
+        uses: actions/download-artifact@v2
+        with:
+          name: logs
+          path: arts/
+      - name: Cat all
+        run: tail arts/*
+
