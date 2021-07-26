@@ -12,7 +12,7 @@ jobs:
         packages: [ "vim", "mariadb", "postgresql-server" ]
         host:     [ "http://download.opensuse.org", "http://mirrorcache-us.opensuse.org" ]
     container:
-      image: opensuse/tumbleweed
+      image: registry.opensuse.org/opensuse/tumbleweed
     steps:
       - name: Configure mirrorcache
         run: sed -i 's,http://download.opensuse.org,https://mirrorcache-us.opensuse.org,g' /etc/zypp/repos.d/*repo
