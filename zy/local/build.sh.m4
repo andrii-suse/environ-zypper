@@ -7,7 +7,7 @@ done
     __workdir/openSUSE_Tumbleweed/zypper ar $host/update/tumbleweed$oss download$oss-update
 done
 
-for leap in $(grep 15 __workdir/.service.lst); do
+for leap in $(grep 15 __libdir/.service.lst); do
     [ ! -d __workdir/$leap ] || for oss in oss non-oss; do
         id=${leap//[!0-9\.]/}
         __workdir/$leap/zypper ar $host/distribution/leap/$id/repo/$oss download-$oss
