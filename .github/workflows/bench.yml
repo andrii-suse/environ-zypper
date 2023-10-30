@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         packages: [ "vim", "mariadb", "postgresql-server" ]
-        host:     [ "http://download.opensuse.org", "http://mirrorcache-us.opensuse.org" ]
+        host:     [ "http://download.opensuse.org", "http://mirrorcache-us.opensuse.org", "http://cdn.opensuse.org" ]
     container:
       image: opensuse/tumbleweed
     steps:
