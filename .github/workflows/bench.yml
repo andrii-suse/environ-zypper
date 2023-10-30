@@ -14,8 +14,6 @@ jobs:
     container:
       image: opensuse/tumbleweed
     steps:
-      - name: Configure mirrorcache
-        run: sed -i 's,http://download.opensuse.org,https://mirrorcache-us.opensuse.org,g' /etc/zypp/repos.d/*repo
       - name: Install dependencies
         run: zypper -n in m4 git-core make sudo
       - name: Clone environ
@@ -38,10 +36,12 @@ jobs:
           mkdir arts
           du -hs zy1/openSUSE_Tumbleweed/              > arts/${{ matrix.packages  }}.tumbleweed.$host.du
           cat zy1/openSUSE_Tumbleweed/.seconds_install > arts/${{ matrix.packages  }}.tumbleweed.$host.seconds
-          du -hs zy1/openSUSE_Leap_15.2/               > arts/${{ matrix.packages  }}.leap152.$host.du
-          cat zy1/openSUSE_Leap_15.2/.seconds_install  > arts/${{ matrix.packages  }}.leap152.$host.seconds
           du -hs zy1/openSUSE_Leap_15.3/               > arts/${{ matrix.packages  }}.leap153.$host.du
           cat zy1/openSUSE_Leap_15.3/.seconds_install  > arts/${{ matrix.packages  }}.leap153.$host.seconds
+          du -hs zy1/15.4/               > arts/${{ matrix.packages  }}.leap154.$host.du
+          cat zy1/15.4/.seconds_install  > arts/${{ matrix.packages  }}.leap154.$host.seconds
+          du -hs zy1/15.5/               > arts/${{ matrix.packages  }}.leap155.$host.du
+          cat zy1/15.5/.seconds_install  > arts/${{ matrix.packages  }}.leap155.$host.seconds
       - uses: actions/upload-artifact@v2
         with:
           name: logs
